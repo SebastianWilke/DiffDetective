@@ -1,5 +1,5 @@
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.tinylog.Logger;
 import org.variantsync.diffdetective.diff.difftree.CommitDiffDiffTreeSource;
 import org.variantsync.diffdetective.diff.difftree.DiffTree;
@@ -7,18 +7,15 @@ import org.variantsync.diffdetective.diff.difftree.serialize.*;
 import org.variantsync.diffdetective.diff.difftree.serialize.edgeformat.DefaultEdgeLabelFormat;
 import org.variantsync.diffdetective.diff.difftree.serialize.nodeformat.LabelOnlyDiffNodeFormat;
 import org.variantsync.diffdetective.diff.difftree.serialize.treeformat.CommitDiffDiffTreeLabelFormat;
-import org.variantsync.diffdetective.util.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
-import static org.junit.Assert.assertEquals;
 /**
  * For testing the import of a line graph.
  */
@@ -35,7 +32,7 @@ public class LineGraphTest {
 
     private static List<Path> TEST_FILES;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws IOException {
         TEST_FILES = Files.list(Paths.get("src/test/resources/line_graph")).toList();
     }
