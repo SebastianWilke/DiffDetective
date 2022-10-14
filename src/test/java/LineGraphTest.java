@@ -1,6 +1,5 @@
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.tinylog.Logger;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.variantsync.diffdetective.diff.difftree.CommitDiffDiffTreeSource;
 import org.variantsync.diffdetective.diff.difftree.DiffTree;
 import org.variantsync.diffdetective.diff.difftree.serialize.*;
@@ -15,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * For testing the import of a line graph.
@@ -30,30 +30,25 @@ public class LineGraphTest {
             IMPORT_OPTIONS
     );
 
-    private static List<Path> TEST_FILES;
-
-    @BeforeAll
-    public static void init() throws IOException {
-        TEST_FILES = Files.list(Paths.get("src/test/resources/line_graph")).toList();
+    public static Stream<Path> testCases() throws IOException {
+        return Files.list(Paths.get("src/test/resources/line_graph"));
     }
 
-	/**
-	 * Test the import of a line graph.
-	 */
-	@Test
-	public void idempotentReadWrite() throws IOException {
-        for (final Path testFile : TEST_FILES) {
-            Logger.info("Testing {}", testFile);
-            List<DiffTree> diffTrees;
-            try (BufferedReader lineGraph = Files.newBufferedReader(testFile)) {
-                diffTrees = LineGraphImport.fromLineGraph(lineGraph, testFile, IMPORT_OPTIONS);
-            }
-            assertConsistencyForAll(diffTrees);
-            final String lineGraphResult = exportDiffTreeToLineGraph(diffTrees);
-            TestUtils.assertEqualToFile(testFile, lineGraphResult);
+    /**
+     * Test the import of a line graph.
+     */
+    @ParameterizedTest
+    @MethodSource("testCases")
+    public void idempotentReadWrite(Path testFile) throws IOException {
+        List<DiffTree> diffTrees;
+        try (BufferedReader lineGraph = Files.newBufferedReader(testFile)) {
+            diffTrees = LineGraphImport.fromLineGraph(lineGraph, testFile, IMPORT_OPTIONS);
         }
-	}
-	
+        assertConsistencyForAll(diffTrees);
+        final String lineGraphResult = exportDiffTreeToLineGraph(diffTrees);
+        TestUtils.assertEqualToFile(testFile, lineGraphResult);
+    }
+
 	/**
 	 * Check consistency of {@link DiffTree DiffTrees}.
 	 * 
